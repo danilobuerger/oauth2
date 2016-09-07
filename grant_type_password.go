@@ -2,7 +2,10 @@
 
 package oauth2
 
-import "net/http"
+import (
+	"context"
+	"net/http"
+)
 
 // PasswordGrantType (resource owner password credentials grant type) is suitable in
 // cases where the resource owner has a trust relationship with the
@@ -27,7 +30,7 @@ const PasswordGrantType = "password"
 //
 // https://tools.ietf.org/html/rfc6749#section-4.3.2
 type PasswordGrantTypeService interface {
-	PasswordGrantTypeResponse(client Client, username, password string) (*AccessResponse, error)
+	PasswordGrantTypeResponse(ctx context.Context, client Client, username, password string) (*AccessResponse, error)
 }
 
 // NewPasswordGrantType creates a new grant type.
@@ -57,7 +60,7 @@ func (gt *passwordGT) Grant(req *http.Request, client Client) (*AccessResponse, 
 		return nil, ErrInvalidRequest
 	}
 
-	access, err := gt.service.PasswordGrantTypeResponse(client, username, password)
+	access, err := gt.service.PasswordGrantTypeResponse(req.Context(), client, username, password)
 	if err != nil {
 		return nil, ErrInvalidGrant
 	}

@@ -2,7 +2,10 @@
 
 package oauth2
 
-import "net/http"
+import (
+	"context"
+	"net/http"
+)
 
 // RefreshGrantType is used for refreshing an access token.
 //
@@ -28,7 +31,7 @@ const RefreshGrantType = "refresh"
 //
 // https://tools.ietf.org/html/rfc6749#section-6
 type RefreshGrantTypeService interface {
-	RefreshGrantTypeResponse(client Client, refreshToken string) (*AccessResponse, error)
+	RefreshGrantTypeResponse(ctx context.Context, client Client, refreshToken string) (*AccessResponse, error)
 }
 
 // NewRefreshGrantType creates a new grant type.
@@ -57,7 +60,7 @@ func (gt *refreshGT) Grant(req *http.Request, client Client) (*AccessResponse, e
 		return nil, ErrInvalidRequest
 	}
 
-	access, err := gt.service.RefreshGrantTypeResponse(client, token)
+	access, err := gt.service.RefreshGrantTypeResponse(req.Context(), client, token)
 	if err != nil {
 		return nil, ErrInvalidGrant
 	}

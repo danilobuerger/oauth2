@@ -3,6 +3,7 @@
 package oauth2
 
 import (
+	"context"
 	"encoding"
 	"net/http"
 	"net/url"
@@ -24,7 +25,7 @@ const ImplicitGrantType = "implicit"
 //
 // https://tools.ietf.org/html/rfc6749#section-4.2.2
 type ImplicitGrantTypeService interface {
-	ImplicitGrantTypeResponse(client Client, req *AuthorizeRequest) (*AccessResponse, error)
+	ImplicitGrantTypeResponse(ctx context.Context, client Client, req *AuthorizeRequest) (*AccessResponse, error)
 }
 
 // NewImplicitGrantType creates a new grant type.
@@ -48,7 +49,7 @@ func (gt *implicitGT) ResponseName() string {
 }
 
 func (gt *implicitGT) Respond(w http.ResponseWriter, req *http.Request, client Client, authReq *AuthorizeRequest) {
-	access, err := gt.service.ImplicitGrantTypeResponse(client, authReq)
+	access, err := gt.service.ImplicitGrantTypeResponse(req.Context(), client, authReq)
 	if err != nil {
 		redirectWithError(w, req, authReq.RedirectURI, authReq.State, ErrAccessDenied)
 	}

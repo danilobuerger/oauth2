@@ -4,6 +4,7 @@
 package oauth2
 
 import (
+	"context"
 	"net/http"
 	"net/url"
 )
@@ -30,7 +31,7 @@ type Client interface {
 
 // Storer finds clients by their identifier.
 type Storer interface {
-	FindClient(id string) (Client, error)
+	FindClient(ctx context.Context, id string) (Client, error)
 }
 
 // GrantType is a oauth2 grant type.

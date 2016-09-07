@@ -59,7 +59,7 @@ func (h *Handler) clientFromRequest(req *http.Request, grantType GrantType) (Cli
 		return nil, ErrInvalidRequest
 	}
 
-	client, err := h.storer.FindClient(clientID)
+	client, err := h.storer.FindClient(req.Context(), clientID)
 	if err != nil || client == nil {
 		return nil, ErrInvalidClient
 	}
