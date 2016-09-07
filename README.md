@@ -1,4 +1,4 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/danilobuerger/oauth2)](https://goreportcard.com/report/github.com/danilobuerger/oauth2)
+[![Build Status](https://travis-ci.org/danilobuerger/oauth2.svg?branch=master)](https://travis-ci.org/danilobuerger/oauth2) [![Go Report Card](https://goreportcard.com/badge/github.com/danilobuerger/oauth2)](https://goreportcard.com/report/github.com/danilobuerger/oauth2)
 
 # oauth2
 
