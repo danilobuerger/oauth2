@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 )
 
 // Handler provides the oauth2 protocol endpoints:
@@ -152,11 +153,11 @@ func (h *Handler) Authorize(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	grantType.Respond(w, req, client, &AuthorizeRequest{
-		URL:          req.URL,
-		ResponseType: responseName,
-		ClientID:     client.Identifier(),
-		RedirectURI:  redirectURI,
-		State:        state,
-	})
+	values := url.Values{}
+	values.Set("response_type", responseName)
+	values.Set("client_id", client.Identifier())
+	values.Set("redirect_uri", redirectURI)
+	values.Set("state", state)
+
+	grantType.Respond(w, req, values, client, redirectURI, state)
 }

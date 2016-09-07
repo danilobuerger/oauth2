@@ -25,7 +25,7 @@ const ImplicitGrantType = "implicit"
 //
 // https://tools.ietf.org/html/rfc6749#section-4.2.2
 type ImplicitGrantTypeService interface {
-	ImplicitGrantTypeResponse(ctx context.Context, client Client, req *AuthorizeRequest) (*AccessResponse, error)
+	ImplicitGrantTypeResponse(ctx context.Context, client Client, path string, params url.Values) (*AccessResponse, error)
 }
 
 // NewImplicitGrantType creates a new grant type.
@@ -48,10 +48,10 @@ func (gt *implicitGT) ResponseName() string {
 	return "token"
 }
 
-func (gt *implicitGT) Respond(w http.ResponseWriter, req *http.Request, client Client, authReq *AuthorizeRequest) {
-	access, err := gt.service.ImplicitGrantTypeResponse(req.Context(), client, authReq)
+func (gt *implicitGT) Respond(w http.ResponseWriter, req *http.Request, reqParams url.Values, client Client, redirectURI, state string) {
+	access, err := gt.service.ImplicitGrantTypeResponse(req.Context(), client, req.URL.Path, reqParams)
 	if err != nil {
-		redirectWithError(w, req, authReq.RedirectURI, authReq.State, ErrAccessDenied)
+		redirectWithError(w, req, redirectURI, state, ErrAccessDenied)
 	}
 	if access == nil {
 		return
@@ -77,7 +77,7 @@ func (gt *implicitGT) Respond(w http.ResponseWriter, req *http.Request, client C
 	values.Set("token_type", access.TokenType)
 	values.Set("expires_in", access.ExpiresIn)
 
-	redirectWithValues(w, req, authReq.RedirectURI, authReq.State, values)
+	redirectWithValues(w, req, redirectURI, state, values)
 }
 
 func redirectWithError(w http.ResponseWriter, req *http.Request, redirectURI, state string, err error) {

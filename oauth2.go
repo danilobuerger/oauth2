@@ -50,16 +50,7 @@ type TokenGrantType interface {
 type AuthorizeGrantType interface {
 	GrantType
 	ResponseName() string
-	Respond(w http.ResponseWriter, req *http.Request, client Client, authReq *AuthorizeRequest)
-}
-
-// AuthorizeRequest is a request on the /authorize endpoint.
-type AuthorizeRequest struct {
-	URL          *url.URL
-	ResponseType string
-	ClientID     string
-	RedirectURI  string
-	State        string
+	Respond(w http.ResponseWriter, req *http.Request, reqParams url.Values, client Client, redirectURI, state string)
 }
 
 // AccessResponse holds a valid and authorized access response.
