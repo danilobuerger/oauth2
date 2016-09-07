@@ -30,7 +30,7 @@ const PasswordGrantType = "password"
 //
 // https://tools.ietf.org/html/rfc6749#section-4.3.2
 type PasswordGrantTypeService interface {
-	PasswordGrantTypeResponse(ctx context.Context, client Client, username, password string) (*AccessResponse, error)
+	PasswordGrantTypeResponse(ctx context.Context, client Client, username, password string, issueRefreshToken bool) (*AccessResponse, error)
 }
 
 // NewPasswordGrantType creates a new grant type.
@@ -60,9 +60,15 @@ func (gt *passwordGT) Grant(req *http.Request, client Client) (*AccessResponse, 
 		return nil, ErrInvalidRequest
 	}
 
-	access, err := gt.service.PasswordGrantTypeResponse(req.Context(), client, username, password)
+	issueRefreshToken := client.IsAllowedGrantType(RefreshGrantType)
+
+	access, err := gt.service.PasswordGrantTypeResponse(req.Context(), client, username, password, issueRefreshToken)
 	if err != nil {
 		return nil, ErrInvalidGrant
+	}
+
+	if !issueRefreshToken {
+		access.RefreshToken = ""
 	}
 
 	return access, nil
