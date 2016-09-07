@@ -103,17 +103,7 @@ func (h *Handler) Token(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	body := access.Info
-
-	body["access_token"] = access.AccessToken
-	body["token_type"] = access.TokenType
-	body["expires_in"] = access.ExpiresIn
-
-	if access.RefreshToken != "" {
-		body["refresh_token"] = access.RefreshToken
-	}
-
-	writeJSON(w, h.logger, http.StatusOK, body, map[string]string{
+	writeJSON(w, h.logger, http.StatusOK, access.ToMap(), map[string]string{
 		"Cache-Control": "no-store",
 		"Pragma":        "no-cache",
 	})

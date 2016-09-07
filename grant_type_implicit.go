@@ -4,7 +4,6 @@ package oauth2
 
 import (
 	"context"
-	"encoding"
 	"net/http"
 	"net/url"
 )
@@ -57,25 +56,8 @@ func (gt *implicitGT) Respond(w http.ResponseWriter, req *http.Request, reqParam
 		return
 	}
 
-	values := url.Values{}
-	for k, vi := range access.Info {
-		if vs, ok := vi.([]string); ok {
-			for _, v := range vs {
-				values.Add(k, v)
-			}
-		} else if v, ok := vi.(string); ok {
-			values.Set(k, v)
-		} else if v, ok := vi.(encoding.TextMarshaler); ok {
-			text, err := v.MarshalText()
-			if err == nil {
-				values.Set(k, string(text))
-			}
-		}
-	}
-
-	values.Set("access_token", access.AccessToken)
-	values.Set("token_type", access.TokenType)
-	values.Set("expires_in", access.ExpiresIn)
+	access.RefreshToken = ""
+	values := access.ToValues()
 
 	redirectWithValues(w, req, redirectURI, state, values)
 }

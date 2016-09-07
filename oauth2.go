@@ -52,12 +52,3 @@ type AuthorizeGrantType interface {
 	ResponseName() string
 	Respond(w http.ResponseWriter, req *http.Request, reqParams url.Values, client Client, redirectURI, state string)
 }
-
-// AccessResponse holds a valid and authorized access response.
-type AccessResponse struct {
-	AccessToken  string
-	TokenType    string
-	ExpiresIn    string
-	RefreshToken string
-	Info         map[string]interface{}
-}
