@@ -4,8 +4,8 @@ package oauth2
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
-	"strconv"
 	"testing"
 )
 
@@ -64,11 +64,12 @@ func TestErrorText(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(strconv.Itoa(tt.status), func(t *testing.T) {
+		tt := tt
+		t.Run(fmt.Sprintf("Status=%d", tt.status), func(t *testing.T) {
 			t.Parallel()
 			got := errorText(tt.status, errors.New(tt.text))
 			if got != tt.expected {
-				t.Errorf("errorText(%v, %v) => %v, expected %v", tt.status, tt.text, got, tt.expected)
+				t.Errorf("errorText(%d, %s) => %s, expected %s", tt.status, tt.text, got, tt.expected)
 			}
 		})
 	}
@@ -128,11 +129,12 @@ func TestIsServerError(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(strconv.Itoa(tt.status), func(t *testing.T) {
+		tt := tt
+		t.Run(fmt.Sprintf("Status=%d", tt.status), func(t *testing.T) {
 			t.Parallel()
 			got := isServerError(tt.status)
 			if got != tt.expected {
-				t.Errorf("isServerError(%v) => %v, expected %v", tt.status, got, tt.expected)
+				t.Errorf("isServerError(%d) => %t, expected %t", tt.status, got, tt.expected)
 			}
 		})
 	}
