@@ -27,6 +27,8 @@ type Client interface {
 	Identifier() string
 	IsAllowedRedirectURI(uri string) bool
 	IsAllowedGrantType(identifier string) bool
+	IsConfidential() bool
+	Authenticate(secret string) bool
 }
 
 // Storer finds clients by their identifier.

@@ -6,7 +6,6 @@ Package `oauth2` is a server implementation of the [OAuth 2.0 Authorization Fram
 
 ## Work in progress
 
-- [ ] Confidential Clients [#1](https://github.com/danilobuerger/oauth2/issues/1)
 - [ ] Authorization Code Grant Type [#2](https://github.com/danilobuerger/oauth2/issues/2)
 - [ ] Client Credentials Grant Type [#3](https://github.com/danilobuerger/oauth2/issues/3)
 - [ ] Tests [#4](https://github.com/danilobuerger/oauth2/issues/4)

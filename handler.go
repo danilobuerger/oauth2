@@ -55,7 +55,12 @@ func NewHandler(storer Storer, logger Log, gts ...GrantType) *Handler {
 }
 
 func (h *Handler) clientFromRequest(req *http.Request, grantType GrantType) (Client, error) {
-	clientID := req.FormValue("client_id")
+	clientID, clientSecret, ok := req.BasicAuth()
+	if !ok {
+		clientID = req.FormValue("client_id")
+		clientSecret = ""
+	}
+
 	if clientID == "" {
 		return nil, ErrInvalidRequest
 	}
@@ -63,6 +68,12 @@ func (h *Handler) clientFromRequest(req *http.Request, grantType GrantType) (Cli
 	client, err := h.storer.FindClient(req.Context(), clientID)
 	if err != nil || client == nil {
 		return nil, ErrInvalidClient
+	}
+
+	if client.IsConfidential() {
+		if clientSecret == "" || !client.Authenticate(clientSecret) {
+			return nil, ErrInvalidClient
+		}
 	}
 
 	if !client.IsAllowedGrantType(grantType.Identifier()) {
@@ -93,6 +104,11 @@ func (h *Handler) Token(w http.ResponseWriter, req *http.Request) {
 
 	client, err := h.clientFromRequest(req, grantType)
 	if err != nil {
+		if err == ErrInvalidClient {
+			w.Header().Set("WWW-Authenticate", `Basic realm="oauth2"`)
+			writeError(w, h.logger, http.StatusUnauthorized, err, "")
+			return
+		}
 		writeError(w, h.logger, http.StatusBadRequest, err, "")
 		return
 	}
@@ -134,6 +150,11 @@ func (h *Handler) Authorize(w http.ResponseWriter, req *http.Request) {
 
 	client, err := h.clientFromRequest(req, grantType)
 	if err != nil {
+		if err == ErrInvalidClient {
+			w.Header().Set("WWW-Authenticate", `Basic realm="oauth2"`)
+			writeError(w, h.logger, http.StatusUnauthorized, err, state)
+			return
+		}
 		writeError(w, h.logger, http.StatusBadRequest, err, state)
 		return
 	}
