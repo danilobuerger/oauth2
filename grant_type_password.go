@@ -34,14 +34,15 @@ type PasswordGrantTypeService interface {
 }
 
 // NewPasswordGrantType creates a new grant type.
-func NewPasswordGrantType(service PasswordGrantTypeService) GrantType {
-	return &passwordGT{service}
+func NewPasswordGrantType(logger Log, service PasswordGrantTypeService) GrantType {
+	return &passwordGT{logger, service}
 }
 
 var _ GrantType = (*passwordGT)(nil)
 var _ TokenGrantType = (*passwordGT)(nil)
 
 type passwordGT struct {
+	logger  Log
 	service PasswordGrantTypeService
 }
 
@@ -64,6 +65,9 @@ func (gt *passwordGT) Grant(req *http.Request, client Client) (*AccessResponse, 
 
 	access, err := gt.service.PasswordGrantTypeResponse(req.Context(), client, username, password, issueRefreshToken)
 	if err != nil {
+		if gt.logger != nil {
+			gt.logger.Println(err)
+		}
 		return nil, ErrInvalidGrant
 	}
 

@@ -30,14 +30,15 @@ type ClientGrantTypeService interface {
 }
 
 // NewClientGrantType creates a new grant type.
-func NewClientGrantType(service ClientGrantTypeService) GrantType {
-	return &clientGT{service}
+func NewClientGrantType(logger Log, service ClientGrantTypeService) GrantType {
+	return &clientGT{logger, service}
 }
 
 var _ GrantType = (*clientGT)(nil)
 var _ TokenGrantType = (*clientGT)(nil)
 
 type clientGT struct {
+	logger  Log
 	service ClientGrantTypeService
 }
 
@@ -56,6 +57,9 @@ func (gt *clientGT) Grant(req *http.Request, client Client) (*AccessResponse, er
 
 	access, err := gt.service.ClientGrantTypeResponse(req.Context(), client)
 	if err != nil {
+		if gt.logger != nil {
+			gt.logger.Println(err)
+		}
 		return nil, ErrInvalidGrant
 	}
 

@@ -27,14 +27,15 @@ type ImplicitGrantTypeService interface {
 }
 
 // NewImplicitGrantType creates a new grant type.
-func NewImplicitGrantType(service ImplicitGrantTypeService) GrantType {
-	return &implicitGT{service}
+func NewImplicitGrantType(logger Log, service ImplicitGrantTypeService) GrantType {
+	return &implicitGT{logger, service}
 }
 
 var _ GrantType = (*implicitGT)(nil)
 var _ AuthorizeGrantType = (*implicitGT)(nil)
 
 type implicitGT struct {
+	logger  Log
 	service ImplicitGrantTypeService
 }
 
@@ -49,6 +50,9 @@ func (gt *implicitGT) ResponseName() string {
 func (gt *implicitGT) Respond(w http.ResponseWriter, req *http.Request, reqParams url.Values, client Client, redirectURI, state string) {
 	access, err := gt.service.ImplicitGrantTypeResponse(w, req, client, reqParams)
 	if err != nil {
+		if gt.logger != nil {
+			gt.logger.Println(err)
+		}
 		redirectWithError(w, req, redirectURI, state, ErrAccessDenied)
 	}
 	if access == nil {

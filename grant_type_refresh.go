@@ -35,14 +35,15 @@ type RefreshGrantTypeService interface {
 }
 
 // NewRefreshGrantType creates a new grant type.
-func NewRefreshGrantType(service RefreshGrantTypeService) GrantType {
-	return &refreshGT{service}
+func NewRefreshGrantType(logger Log, service RefreshGrantTypeService) GrantType {
+	return &refreshGT{logger, service}
 }
 
 var _ GrantType = (*refreshGT)(nil)
 var _ TokenGrantType = (*refreshGT)(nil)
 
 type refreshGT struct {
+	logger  Log
 	service RefreshGrantTypeService
 }
 
@@ -62,6 +63,9 @@ func (gt *refreshGT) Grant(req *http.Request, client Client) (*AccessResponse, e
 
 	access, err := gt.service.RefreshGrantTypeResponse(req.Context(), client, token)
 	if err != nil {
+		if gt.logger != nil {
+			gt.logger.Println(err)
+		}
 		return nil, ErrInvalidGrant
 	}
 
