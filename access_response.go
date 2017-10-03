@@ -5,6 +5,7 @@ package oauth2
 import (
 	"encoding"
 	"net/url"
+	"strconv"
 )
 
 // AccessResponse holds a valid and authorized access response.
@@ -41,6 +42,8 @@ func (r *AccessResponse) ToValues() url.Values {
 			}
 		} else if v, ok := vi.(string); ok {
 			values.Set(k, v)
+		} else if v, ok := vi.(bool); ok {
+			values.Set(k, strconv.FormatBool(v))
 		} else if v, ok := vi.(encoding.TextMarshaler); ok {
 			text, err := v.MarshalText()
 			if err == nil {
