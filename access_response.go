@@ -12,7 +12,7 @@ import (
 type AccessResponse struct {
 	AccessToken  string
 	TokenType    string
-	ExpiresIn    string
+	ExpiresIn    int64
 	RefreshToken string
 	Info         map[string]interface{}
 }
@@ -54,7 +54,7 @@ func (r *AccessResponse) ToValues() url.Values {
 
 	values.Set("access_token", r.AccessToken)
 	values.Set("token_type", r.TokenType)
-	values.Set("expires_in", r.ExpiresIn)
+	values.Set("expires_in", strconv.FormatInt(r.ExpiresIn, 10))
 
 	return values
 }
