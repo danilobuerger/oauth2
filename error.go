@@ -83,3 +83,12 @@ var ErrAccessDenied = errors.New("access_denied")
 // https://tools.ietf.org/html/rfc6749#section-4.1.2.1
 // https://tools.ietf.org/html/rfc6749#section-4.2.2.1
 var ErrUnsupportedResponseType = errors.New("unsupported_response_type")
+
+// ErrServerError is returned when:
+//
+// The authorization server encountered an unexpected
+// condition that prevented it from fulfilling the request.
+//
+// https://tools.ietf.org/html/rfc6749#section-4.1.2.1
+// https://tools.ietf.org/html/rfc6749#section-4.2.2.1
+var ErrServerError = errors.New("server_error")

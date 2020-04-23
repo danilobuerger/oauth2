@@ -66,7 +66,10 @@ func (h *Handler) clientFromRequest(req *http.Request, grantType GrantType) (Cli
 	}
 
 	client, err := h.storer.FindClient(req.Context(), clientID)
-	if err != nil || client == nil {
+	if err != nil {
+		return nil, ErrServerError
+	}
+	if client == nil {
 		return nil, ErrInvalidClient
 	}
 
@@ -108,6 +111,8 @@ func (h *Handler) Token(w http.ResponseWriter, req *http.Request) {
 			w.Header().Set("WWW-Authenticate", `Basic realm="oauth2"`)
 			writeError(w, h.logger, http.StatusUnauthorized, err, "")
 			return
+		} else if err == ErrServerError {
+			writeError(w, h.logger, http.StatusInternalServerError, err, "")
 		}
 		writeError(w, h.logger, http.StatusBadRequest, err, "")
 		return
@@ -154,6 +159,8 @@ func (h *Handler) Authorize(w http.ResponseWriter, req *http.Request) {
 			w.Header().Set("WWW-Authenticate", `Basic realm="oauth2"`)
 			writeError(w, h.logger, http.StatusUnauthorized, err, state)
 			return
+		} else if err == ErrServerError {
+			writeError(w, h.logger, http.StatusInternalServerError, err, state)
 		}
 		writeError(w, h.logger, http.StatusBadRequest, err, state)
 		return
